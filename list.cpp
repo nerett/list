@@ -14,12 +14,12 @@ void ListCtor( List* some_list )
 	some_list->head = 0;
 	some_list->tail = 0;
 
-	some_list->next = ( int* )calloc( some_list->N_elements, sizeof( int ) );
-	some_list->data = ( list_element_t* )calloc( some_list->N_elements, sizeof( list_element_t ) );
+	some_list->next = ( int* )calloc( some_list->capacity, sizeof( int ) );
+	some_list->data = ( list_element_t* )calloc( some_list->capacity, sizeof( list_element_t ) );
 
 	for( int i = 1; i < some_list->capacity; i++ )
 	{
-		some_list->next[i] = -1;
+		some_list->next[i] = FREE_POSITION;
 	}
 
 	some_list->is_initialized = true;
@@ -59,10 +59,16 @@ int lst_insert( List* some_list, list_element_t value, int place )
 		//some calculations
 	}
 
+
 	int free_place = find_first_free_place( some_list );
 	if( free_place == 0 )
 	{
 		return {};
+	}
+
+	if( some_list->N_elements == 0 )
+	{
+		some_list->head == free_place;
 	}
 
 	some_list->data[free_place] = value; //записываем значение
@@ -72,10 +78,6 @@ int lst_insert( List* some_list, list_element_t value, int place )
 
 	some_list->N_elements++;
 
-	if( some_list->next[free_place] == 0 )
-	{
-		some_list->head == 1;
-	}
 	if( some_list->tail < free_place )
 	{
 		some_list->tail = free_place;
@@ -86,10 +88,33 @@ int lst_insert( List* some_list, list_element_t value, int place )
 
 
 
+list_element_t lst_pop( List* some_list, int place )
+{
+	if( place == LST_BACK )
+	{
+		printf( "fuck you, leatherman!\n" );
+		abort();
+		//some calculations
+	}
+
+	int prev = find_prev( some_list, place );
+
+	some_list->next[prev] = some_list->next[place]; //предыдущий ссылается на следующий (без удаляемого)
+
+	list_element_t value = some_list->data[place];
+
+	some_list->data[place] = INT_POISON;
+	some_list->next[place] = FREE_POSITION; //позиция элемента освобождена
+
+	return value;
+}
+
+
+
 int find_first_free_place( List* some_list )
 {
 	int counter = 0;
-	for( counter; counter < some_list->capacity - 1; counter++ )
+	for( counter = 1; counter < some_list->capacity - 1; counter++ )
 	{
 		if( some_list->next[counter] == -1 )
 		{
@@ -97,5 +122,22 @@ int find_first_free_place( List* some_list )
 		}
 	}
 
+	printf("first free place = %d\n", counter );
 	return counter;
+}
+
+
+
+int find_prev( List* some_list, int place )
+{
+	int prev = 0;
+	for( prev = 1; prev < some_list->capacity - 1; prev++ )
+	{
+		if( some_list->next[prev] == place )
+		{
+			break;
+		}
+	}
+
+	return prev;
 }
