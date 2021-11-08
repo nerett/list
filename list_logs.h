@@ -7,6 +7,7 @@
 const char LIST_LOGS_FILENAME[] = "list_log.html";
 const int MAXIMUM_IMAGE_FILENAME_LENGTH = 40;
 const int MAXIMUM_RENDER_BUFFER_FILENAME_LENGTH = 40;
+const int MAXIMUM_RENDER_COMMAND_LENGTH = 160;
 
 
 enum lst_err_code
